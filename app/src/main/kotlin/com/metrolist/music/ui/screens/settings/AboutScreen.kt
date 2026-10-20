@@ -5,6 +5,10 @@
 
 package com.metrolist.music.ui.screens.settings
 
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,8 +24,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -39,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -68,6 +76,7 @@ fun AboutScreen(
     navController: NavController,
 ) {
     val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
     val windowInsets = LocalPlayerAwareWindowInsets.current
 
     Column(
@@ -232,6 +241,108 @@ fun AboutScreen(
                     Icon(painterResource(R.drawable.instagram), contentDescription = null)
                     Spacer(Modifier.width(12.dp))
                     Text("@17__ashu_", fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+
+        Spacer(Modifier.height(24.dp))
+
+        // Lead Developer Card
+        ElevatedCard(
+            shape = RoundedCornerShape(32.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(20.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Surface(
+                        modifier = Modifier.size(110.dp),
+                        shape = MaterialShapes.Cookie9Sided.toShape(),
+                        color = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ashu_photo),
+                            contentDescription = "Ashu",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+
+                    Column(
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Ashu",
+                            style = MaterialTheme.typography.headlineLarge,
+                            fontWeight = FontWeight.Black,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            lineHeight = 38.sp,
+                            letterSpacing = (-0.5).sp
+                        )
+                        Text(
+                            text = stringResource(R.string.credits_lead_developer),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+
+                Spacer(Modifier.height(24.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    FilledTonalButton(
+                        onClick = { uriHandler.openUri("https://www.facebook.com/share/1kaNQySWMm/") },
+                        modifier = Modifier.weight(1f).height(56.dp)
+                    ) {
+                        Icon(painterResource(R.drawable.facebook), contentDescription = "Facebook")
+                    }
+                    FilledTonalButton(
+                        onClick = { uriHandler.openUri("https://www.instagram.com/17__ashu_") },
+                        modifier = Modifier.weight(1f).height(56.dp)
+                    ) {
+                        Icon(painterResource(R.drawable.instagram), contentDescription = "Instagram")
+                    }
+                    FilledTonalButton(
+                        onClick = { uriHandler.openUri("https://www.snapchat.com/add/ashu17200") },
+                        modifier = Modifier.weight(1f).height(56.dp)
+                    ) {
+                        Icon(painterResource(R.drawable.snapchat), contentDescription = "Snapchat")
+                    }
+                }
+
+                Spacer(Modifier.height(16.dp))
+
+                Button(
+                    onClick = {
+                        try {
+                            uriHandler.openUri(
+                                "upi://pay?pa=ashutosh17200@okaxis&pn=Ashutosh%20Kumar&cu=INR"
+                            )
+                        } catch (e: Exception) {
+                            val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                            cm.setPrimaryClip(ClipData.newPlainText("UPI", "ashutosh17200@okaxis"))
+                            Toast.makeText(context, "UPI ID copied: ashutosh17200@okaxis", Toast.LENGTH_LONG).show()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = CircleShape,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    )
+                ) {
+                    Icon(painterResource(R.drawable.buymeacoffee), contentDescription = null, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(12.dp))
+                    Text("Buy me a coffee!", fontWeight = FontWeight.ExtraBold, fontSize = 16.sp)
                 }
             }
         }

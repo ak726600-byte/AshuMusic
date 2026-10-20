@@ -129,11 +129,11 @@ android {
         }
         debug {
             if (applicationIdOverride == null) {
-                applicationIdSuffix = ".debug"
+                // debug uses same package as release
             }
             isDebuggable = true
             if (appNameOverride == null) {
-                resValue("string", "app_name", "Metrolist Debug")
+                resValue("string", "app_name", "Ashu Music")
             }
             signingConfig =
                 if (workflowDebugKeystoreFile != null) {
