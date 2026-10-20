@@ -5,6 +5,9 @@ on:
   push:
     branches: ["main"]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-24.04
@@ -37,3 +40,10 @@ jobs:
         with:
           name: AshuMusic-apk
           path: app/build/outputs/apk/foss/debug/*.apk
+
+      - name: Publish APK to Releases
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: Ashu Music build ${{ github.run_number }}
+          files: app/build/outputs/apk/foss/debug/*.apk
