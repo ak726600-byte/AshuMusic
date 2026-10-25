@@ -5,6 +5,10 @@
 
 package com.metrolist.music.ui.player
 
+import com.metrolist.music.constants.PlayerWallpaperVersionKey
+import com.metrolist.music.constants.PlayerUseWallpaperKey
+import com.metrolist.music.ui.component.WallpaperLayer
+import com.metrolist.music.ui.component.WallpaperKind
 import androidx.activity.compose.BackHandler
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -237,6 +241,9 @@ fun BottomSheetPlayer(
         key = PlayerBackgroundStyleKey,
         defaultValue = PlayerBackgroundStyle.DEFAULT,
     )
+    val playerWallpaperOn by rememberPreference(PlayerUseWallpaperKey, false)
+    val playerWallpaperVersion by rememberPreference(PlayerWallpaperVersionKey, 0L)
+    val usePlayerWallpaper = playerWallpaperOn && playerWallpaperVersion > 0L
     val playerButtonsStyle by rememberEnumPreference(
         key = PlayerButtonsStyleKey,
         defaultValue = PlayerButtonsStyle.DEFAULT,
@@ -839,7 +846,13 @@ fun BottomSheetPlayer(
                         .fillMaxSize()
                         .background(bottomSheetBackgroundColor),
             ) {
-                when (playerBackground) {
+                if (usePlayerWallpaper) {
+                    WallpaperLayer(
+                        WallpaperKind.PLAYER,
+                        modifier = Modifier.alpha(backgroundAlpha),
+                        overlayColor = Color.Black,
+                    )
+                } else when (playerBackground) {
                     PlayerBackgroundStyle.BLUR -> {
                         AnimatedContent(
                             targetState = mediaMetadata?.thumbnailUrl,

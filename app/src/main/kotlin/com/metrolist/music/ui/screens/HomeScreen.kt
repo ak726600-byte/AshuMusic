@@ -5,6 +5,8 @@
 
 package com.metrolist.music.ui.screens
 
+import com.metrolist.music.constants.ProfilePhotoVersionKey
+import com.metrolist.music.ui.component.ProfilePhoto
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -1188,18 +1190,29 @@ fun HomeScreen(
                 }
 
             val greetingName by rememberPreference(UserNameKey, defaultValue = "")
+            val profileVersion by rememberPreference(ProfilePhotoVersionKey, defaultValue = 0L)
             LazyColumn(
                 state = lazylistState,
                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
             ) {
-                if (greetingName.isNotBlank()) {
+                if (greetingName.isNotBlank() || profileVersion > 0L) {
                     item(key = "user_greeting") {
-                        Text(
-                            text = "Hey, $greetingName \uD83D\uDC4B",
-                            style = MaterialTheme.typography.headlineSmall,
-                            fontWeight = FontWeight.Bold,
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                        )
+                        ) {
+                            if (profileVersion > 0L) {
+                                ProfilePhoto(size = 44.dp)
+                                Spacer(Modifier.width(12.dp))
+                            }
+                            if (greetingName.isNotBlank()) {
+                                Text(
+                                    text = "Hey, $greetingName \uD83D\uDC4B",
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            }
+                        }
                     }
                 }
                 item {

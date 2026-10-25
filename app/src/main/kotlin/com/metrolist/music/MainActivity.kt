@@ -5,6 +5,12 @@
 
 package com.metrolist.music
 
+import com.metrolist.music.ui.component.StartupGreeting
+import androidx.compose.ui.zIndex
+import androidx.compose.ui.draw.alpha
+import com.metrolist.music.constants.SearchWallpaperVersionKey
+import com.metrolist.music.ui.component.WallpaperLayer
+import com.metrolist.music.ui.component.WallpaperKind
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.ForegroundServiceStartNotAllowedException
@@ -211,7 +217,6 @@ import com.metrolist.music.utils.get
 import com.metrolist.music.utils.rememberEnumPreference
 import com.metrolist.music.utils.rememberPreference
 import com.metrolist.music.constants.WallpaperVersionKey
-import com.metrolist.music.ui.component.AppWallpaper
 import com.metrolist.music.utils.reportException
 import com.metrolist.music.utils.setAppLocale
 import com.metrolist.music.viewmodels.HomeViewModel
@@ -573,6 +578,7 @@ class MainActivity : FragmentActivity() {
 
         val enableDynamicTheme by rememberPreference(DynamicThemeKey, defaultValue = true)
         val wallpaperVersion by rememberPreference(WallpaperVersionKey, defaultValue = 0L)
+        val searchWallpaperVersion by rememberPreference(SearchWallpaperVersionKey, defaultValue = 0L)
         val enableHighRefreshRate by rememberPreference(EnableHighRefreshRateKey, defaultValue = true)
 
         LaunchedEffect(enableHighRefreshRate) {
@@ -722,7 +728,7 @@ class MainActivity : FragmentActivity() {
                         .fillMaxSize()
                         .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface),
             ) {
-                AppWallpaper()
+                StartupGreeting(Modifier.zIndex(100f))
 
                 val density = LocalDensity.current
                 val configuration = LocalWindowInfo.current
@@ -1057,6 +1063,13 @@ class MainActivity : FragmentActivity() {
                         ChangelogScreen(onDismiss = { showChangelog.value = false })
                     }
 
+                    val onSearchRoute = currentRoute?.startsWith("search") == true
+                    WallpaperLayer(WallpaperKind.APP)
+                    WallpaperLayer(
+                        WallpaperKind.SEARCH,
+                        modifier = Modifier.alpha(if (onSearchRoute) 1f else 0f),
+                    )
+
                     Scaffold(
                         snackbarHost = { SnackbarHost(snackbarHostState) },
                         topBar = {
@@ -1297,7 +1310,11 @@ class MainActivity : FragmentActivity() {
                             }
                         },
                         containerColor =
-                            if (wallpaperVersion > 0L) Color.Transparent else MaterialTheme.colorScheme.background,
+                            if (wallpaperVersion > 0L || (onSearchRoute && searchWallpaperVersion > 0L)) {
+                                Color.Transparent
+                            } else {
+                                MaterialTheme.colorScheme.background
+                            },
                         modifier =
                             Modifier
                                 .fillMaxSize()
