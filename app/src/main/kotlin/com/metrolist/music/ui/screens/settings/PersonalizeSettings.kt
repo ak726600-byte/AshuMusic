@@ -7,6 +7,8 @@ import com.metrolist.music.constants.StartupLogoSecondsKey
 import com.metrolist.music.constants.StartupEnabledKey
 import androidx.compose.material3.Switch
 import android.widget.Toast
+import androidx.compose.ui.draw.clip
+import androidx.compose.foundation.background
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
@@ -64,6 +66,7 @@ import com.metrolist.music.constants.UserNameKey
 import com.metrolist.music.ui.component.IconButton
 import com.metrolist.music.ui.component.ProfilePhoto
 import com.metrolist.music.ui.component.WallpaperKind
+import com.metrolist.music.ui.component.WallpaperLayer
 import com.metrolist.music.ui.component.deleteImage
 import com.metrolist.music.ui.component.profilePhotoFile
 import com.metrolist.music.ui.component.saveImageTo
@@ -165,10 +168,36 @@ private fun WallpaperControls(kind: WallpaperKind) {
 }
 
 @Composable
-private fun WallpaperCard(kind: WallpaperKind, title: String, description: String) {
+private fun WallpaperCard(
+    kind: WallpaperKind,
+    title: String,
+    description: String,
+    preview: Boolean = false,
+) {
+    val version by rememberPreference(kind.versionKey, 0L)
     ElevatedCard(shape = RoundedCornerShape(28.dp), modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(20.dp)) {
             SectionTitle(title, description)
+            if (preview && version > 0L) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .height(160.dp)
+                            .clip(RoundedCornerShape(20.dp))
+                            .background(MaterialTheme.colorScheme.background),
+                ) {
+                    WallpaperLayer(kind)
+                    Text(
+                        text = "Ashu Music",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Black,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                }
+                Spacer(Modifier.height(16.dp))
+            }
             WallpaperControls(kind)
         }
     }
@@ -268,6 +297,15 @@ fun PersonalizeSettings(navController: NavController) {
                 }
             }
         }
+
+        Spacer(Modifier.height(20.dp))
+
+        WallpaperCard(
+            kind = WallpaperKind.STARTUP,
+            title = "Start-up wallpaper",
+            description = "Background behind the start-up screen. Use the overlay slider to dim it; the preview updates live.",
+            preview = true,
+        )
 
         Spacer(Modifier.height(20.dp))
 

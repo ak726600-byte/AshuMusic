@@ -479,16 +479,19 @@ class MainActivity : FragmentActivity() {
         }
 
         setContent {
+            var splashDone by rememberSaveable { mutableStateOf(false) }
             Box(Modifier.fillMaxSize()) {
-                MetrolistApp(
-                    latestVersionName = latestVersionName,
-                    onLatestVersionNameChange = { latestVersionName = it },
-                    playerConnection = playerConnectionSnapshot,
-                    database = database,
-                    downloadUtil = downloadUtil,
-                    syncUtils = syncUtils,
-                )
-                com.metrolist.music.ui.component.AshuSplash()
+                CompositionLocalProvider(com.metrolist.music.ui.component.LocalSplashDone provides splashDone) {
+                    MetrolistApp(
+                        latestVersionName = latestVersionName,
+                        onLatestVersionNameChange = { latestVersionName = it },
+                        playerConnection = playerConnectionSnapshot,
+                        database = database,
+                        downloadUtil = downloadUtil,
+                        syncUtils = syncUtils,
+                    )
+                }
+                com.metrolist.music.ui.component.AshuSplash(onFinished = { splashDone = true })
             }
         }
     }

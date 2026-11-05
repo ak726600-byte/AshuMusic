@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,8 +30,14 @@ import com.metrolist.music.R
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
+/** False while the Ashu logo splash is playing; the start-up greeting waits for it to turn true. */
+val LocalSplashDone = compositionLocalOf { true }
+
 @Composable
-fun AshuSplash(modifier: Modifier = Modifier) {
+fun AshuSplash(
+    modifier: Modifier = Modifier,
+    onFinished: () -> Unit = {},
+) {
     var finished by rememberSaveable { mutableStateOf(false) }
     if (finished) return
 
@@ -51,6 +58,7 @@ fun AshuSplash(modifier: Modifier = Modifier) {
         kotlinx.coroutines.delay(600)
         screenAlpha.animateTo(0f, tween(400))
         finished = true
+        onFinished()
     }
 
     Box(
@@ -61,6 +69,7 @@ fun AshuSplash(modifier: Modifier = Modifier) {
             .background(bg),
         contentAlignment = Alignment.Center,
     ) {
+        WallpaperLayer(WallpaperKind.STARTUP, overlayColor = bg, fadeIn = true)
         Image(
             painter = painterResource(R.drawable.ashu_logo),
             contentDescription = null,

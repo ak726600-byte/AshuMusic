@@ -3,6 +3,8 @@ package com.metrolist.music.ui.component
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
@@ -30,6 +33,8 @@ import com.metrolist.music.constants.PlayerWallpaperVersionKey
 import com.metrolist.music.constants.ProfilePhotoVersionKey
 import com.metrolist.music.constants.SearchWallpaperDimKey
 import com.metrolist.music.constants.SearchWallpaperVersionKey
+import com.metrolist.music.constants.StartupWallpaperDimKey
+import com.metrolist.music.constants.StartupWallpaperVersionKey
 import com.metrolist.music.constants.WallpaperDimKey
 import com.metrolist.music.constants.WallpaperVersionKey
 import com.metrolist.music.utils.rememberPreference
@@ -37,7 +42,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
-/** The three places a custom wallpaper can be used. */
+/** The places a custom wallpaper can be used. */
 enum class WallpaperKind(
     val fileName: String,
     val versionKey: Preferences.Key<Long>,
@@ -47,6 +52,7 @@ enum class WallpaperKind(
     APP("wallpaper.img", WallpaperVersionKey, WallpaperDimKey, 0.55f),
     SEARCH("wallpaper_search.img", SearchWallpaperVersionKey, SearchWallpaperDimKey, 0.55f),
     PLAYER("wallpaper_player.img", PlayerWallpaperVersionKey, PlayerWallpaperDimKey, 0.35f),
+    STARTUP("wallpaper_startup.img", StartupWallpaperVersionKey, StartupWallpaperDimKey, 0.45f),
 }
 
 fun wallpaperFile(context: Context, kind: WallpaperKind): File = File(context.filesDir, kind.fileName)
@@ -95,6 +101,7 @@ fun WallpaperLayer(
     kind: WallpaperKind,
     modifier: Modifier = Modifier,
     overlayColor: Color? = null,
+    fadeIn: Boolean = false,
 ) {
     val context = LocalContext.current
     val version by rememberPreference(kind.versionKey, 0L)
@@ -111,9 +118,10 @@ fun WallpaperLayer(
     }
 
     val image = bitmap
+    val appear by animateFloatAsState(if (image != null) 1f else 0f, tween(300), label = "wallpaperFade")
     if (image != null) {
         val overlay = overlayColor ?: MaterialTheme.colorScheme.background
-        Box(modifier.fillMaxSize()) {
+        Box(modifier.fillMaxSize().alpha(if (fadeIn) appear else 1f)) {
             Image(
                 bitmap = image,
                 contentDescription = null,
