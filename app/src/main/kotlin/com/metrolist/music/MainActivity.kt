@@ -479,14 +479,17 @@ class MainActivity : FragmentActivity() {
         }
 
         setContent {
-            MetrolistApp(
-                latestVersionName = latestVersionName,
-                onLatestVersionNameChange = { latestVersionName = it },
-                playerConnection = playerConnectionSnapshot,
-                database = database,
-                downloadUtil = downloadUtil,
-                syncUtils = syncUtils,
-            )
+            Box(Modifier.fillMaxSize()) {
+                MetrolistApp(
+                    latestVersionName = latestVersionName,
+                    onLatestVersionNameChange = { latestVersionName = it },
+                    playerConnection = playerConnectionSnapshot,
+                    database = database,
+                    downloadUtil = downloadUtil,
+                    syncUtils = syncUtils,
+                )
+                com.metrolist.music.ui.component.AshuSplash()
+            }
         }
     }
 
